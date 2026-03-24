@@ -1,11 +1,33 @@
-name: Pipeline Test
+name: Pipeline Demo
+
 on:
-  push: 
+  push:
     branches:
-        - "**"
+      - "feature/**"
+
 jobs:
-    hello-world:
-        runs-on: ubuntu-latest
-        steps:
-            - name: Hello World
-              run: echo "Hello World"
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v5
+      - name: Setup node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+    # Install dependencies and build the project
+      - run: npm ci
+      - run: npm run build
+  test:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+      - run: npm ci
+      - run: npm test
